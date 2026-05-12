@@ -1518,10 +1518,19 @@ function handleFileSelect(files){
 
 function cancelUpload(){ selectedFiles=[]; document.getElementById('uploadPreviewContainer').innerHTML=''; if(document.getElementById('songFileInput')) document.getElementById('songFileInput').value=''; }
 
+let isUploadingGlobal = false;
+window.addEventListener('beforeunload', (e) => {
+    if (isUploadingGlobal) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
 async function submitUpload(){ 
     if(!token){ window.showToast(currentLang === 'fa' ? 'وارد شوید' : 'Please login', true); return; } 
     if(!selectedFiles.length){ window.showToast(currentLang === 'fa' ? 'فایلی انتخاب نشده' : 'No files selected', true); return; } 
     
+    isUploadingGlobal = true;
     const globalPanel = document.getElementById('global-upload-container');
     const progressFill = document.getElementById('upload-progress-fill');
     const statsText = document.getElementById('upload-stats');
@@ -1576,6 +1585,7 @@ async function submitUpload(){
     if (currentView === 'mysongs') await loadMySongs();
     await loadHome();
     
+    isUploadingGlobal = false;
     setTimeout(() => {
         globalPanel.style.display = 'none';
         progressFill.style.width = '0%';
