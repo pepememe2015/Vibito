@@ -55,9 +55,9 @@
         @font-face { font-family: 'iOS15'; src: url('/frontend/font/Ios%2015%20Regular.ttf') format('truetype'); font-weight: normal; font-style: normal; }
 
         * { -webkit-tap-highlight-color: transparent !important; margin: 0; padding: 0; box-sizing: border-box; outline: none !important; }
-        html { font-size: 1rem; }
-        @media (max-width: 768px) { html { font-size: 0.875rem; } }
-        @media (max-width: 480px) { html { font-size: 0.8125rem; } }
+        html { font-size: 1.1rem; }
+        @media (max-width: 768px) { html { font-size: 1rem; } }
+        @media (max-width: 480px) { html { font-size: 1rem; } }
         *:focus, *:active, *:focus-visible { outline: none !important; box-shadow: none !important; -webkit-tap-highlight-color: rgba(0,0,0,0) !important; }
         button, a, div, span { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; -webkit-focus-ring-color: rgba(0,0,0,0) !important; outline: none !important; user-select: none; -webkit-user-select: none; }
         [onclick] { -webkit-tap-highlight-color: rgba(0,0,0,0) !important; outline: none !important; }
@@ -591,7 +591,6 @@
         <div class="expanded-bg" id="expandedBg"></div>
         <button class="expanded-close" onclick="window.closeExpandedPlayer()"><i class="fas fa-chevron-down"></i></button>
         <div class="expanded-cover-container" style="position: relative;">
-            <canvas id="visualizer-canvas"></canvas>
             <div class="expanded-cover" id="expandedCoverCircle"><img id="expCoverImg" src=""></div>
         </div>
         <div class="expanded-info-row">
@@ -865,90 +864,7 @@ let currentPlayingSong = null;
 let audio = new Audio();
 let isPlaying = false;
 
-// ========== ویژوالایزر ==========
-let audioCtx, analyser, source, canvas, ctx, animationId;
-
-function initVisualizer() {
-    if (audioCtx) return;
-    try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioCtx.createAnalyser();
-        source = audioCtx.createMediaElementSource(audio);
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        
-        analyser.fftSize = 256;
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-        
-        canvas = document.getElementById('visualizer-canvas');
-        ctx = canvas.getContext('2d');
-        
-        // تنظیم اندازه کانواس
-        const resize = () => {
-            const size = Math.min(window.innerWidth * 0.9, 500);
-            canvas.width = size;
-            canvas.height = size;
-        };
-        resize();
-        window.addEventListener('resize', resize);
-
-        function draw() {
-            animationId = requestAnimationFrame(draw);
-            analyser.getByteFrequencyData(dataArray);
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            // پیدا کردن شعاع داینامیک بر اساس سایز کاور
-            const coverElement = document.getElementById('expandedCoverCircle');
-            let radius = 145;
-            if (coverElement) {
-                radius = (coverElement.offsetWidth / 2) + 5;
-            }
-            
-            const barCount = 60;
-            const barWidth = (2 * Math.PI * radius) / barCount * 0.6;
-            
-            // گرفتن رنگ تم فعلی
-            const accentColor = getComputedStyle(document.body).getPropertyValue('--accent-color').trim();
-
-            for (let i = 0; i < barCount; i++) {
-                const angle = (i / barCount) * Math.PI * 2;
-                const value = dataArray[i % bufferLength] / 255;
-                const barHeight = value * 60;
-                
-                const x1 = centerX + Math.cos(angle) * radius;
-                const y1 = centerY + Math.sin(angle) * radius;
-                const x2 = centerX + Math.cos(angle) * (radius + barHeight);
-                const y2 = centerY + Math.sin(angle) * (radius + barHeight);
-                
-                ctx.strokeStyle = accentColor;
-                ctx.lineWidth = 3;
-                ctx.lineCap = 'round';
-                ctx.globalAlpha = 0.6 + (value * 0.4);
-                
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
-                
-                // افکت درخشش دور میله‌ها
-                if (value > 0.5) {
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = accentColor;
-                } else {
-                    ctx.shadowBlur = 0;
-                }
-            }
-        }
-        draw();
-    } catch (e) {
-        console.error("Visualizer init failed:", e);
-    }
-}
+// Visualizer removed for mobile performance
 
 window.setPlayMode = function(mode) {
     if (mode === 'shuffle') {
@@ -1215,7 +1131,6 @@ window.previousSong = function() {
 
 window.nextSong = function() { playNextInQueue(); }
 window.togglePlay = function() { 
-    if (!audioCtx) initVisualizer();
     isPlaying ? audio.pause() : audio.play(); 
 }
 
