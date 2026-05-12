@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Final Upload Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; }
+        input, button { margin: 5px; padding: 8px; display: block; width: 95%; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h2>🎵 تست نهایی آپلود</h2>
+    
+    <div id="loginSection">
+        <h3>1️⃣ ابتدا وارد شوید</h3>
+        <input type="text" id="username" placeholder="نام کاربری">
+        <input type="password" id="password" placeholder="رمز عبور">
+        <button onclick="login()">ورود / ثبت‌نام خودکار</button>
+    </div>
+
+    <div id="uploadSection" style="display:none;">
+        <h3>2️⃣ آهنگ خود را آپلود کنید</h3>
+        <input type="text" id="title" placeholder="عنوان آهنگ">
+        <input type="text" id="artist" placeholder="نام خواننده">
+        <input type="file" id="songFile" accept=".mp3">
+        <button onclick="uploadSong()">آپلود به سرور</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let token = null;
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                alert('لطفاً نام کاربری و رمز عبور را وارد کنید');
+                return;
+            }
+
+            try {
+                // ابتدا سعی می‌کنیم لاگین کنیم
+                let res = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                let data = await res.json();
+                
+                // اگر لاگین نشد، ثبت‌نام می‌کنیم
+                if (!res.ok) {
+                    console.log('User not found, registering...');
+                    res = await fetch('/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    data = await res.json();
+                    if (!res.ok) {
+                        alert('خطا در ثبت‌نام: ' + JSON.stringify(data));
+                        return;
+                    }
+                }
+                
+                token = data.access_token;
+                localStorage.setItem('test_token', token);
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('uploadSection').style.display = 'block';
+                document.getElementById('result').innerHTML = '<p class="success">✅ وارد شدید! حالا آهنگ را آپلود کنید.</p>';
+                
+            } catch(e) {
+                alert('خطا: ' + e.message);
+            }
+        }
+
+        async function uploadSong() {
+            const title = document.getElementById('title').value;
+            const artist = document.getElementById('artist').value;
+            const fileInput = document.getElementById('songFile');
+            const file = fileInput.files[0];
+            
+            if (!title || !artist || !file) {
+                alert('لطفاً همه فیلدها را پر کنید');
+                return;
+            }
+            
+            const currentToken = localStorage.getItem('test_token');
+            if (!currentToken) {
+                alert('لطفاً دوباره وارد شوید');
+                location.reload();
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('artist', artist);
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/upload/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                const resultDiv = document.getElementById('result');
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<p class="success">✅ آهنگ "${title}" با موفقیت آپلود شد! (ID: ${result.song_id})</p>`;
+                    document.getElementById('title').value = '';
+                    document.getElementById('artist').value = '';
+                    document.getElementById('songFile').value = '';
+                } else {
+                    resultDiv.innerHTML = `<p class="error">❌ خطا: ${JSON.stringify(result.detail || result)}</p>`;
+                }
+            } catch(e) {
+                document.getElementById('result').innerHTML = `<p class="error">❌ خطا: ${e.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

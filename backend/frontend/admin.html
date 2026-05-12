@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت | Vibino</title>
+    <style>
+        @font-face { font-family: 'iOS15'; src: url('/frontend/font/Ios15Light.ttf') format('truetype'); font-weight: 300; }
+        @font-face { font-family: 'iOS15'; src: url('/frontend/font/Ios%2015%20Regular.ttf') format('truetype'); font-weight: 400; }
+        @font-face { font-family: 'iOS15'; src: url('/frontend/font/Ios%2015%20Medium.ttf') format('truetype'); font-weight: 500; }
+        @font-face { font-family: 'iOS15'; src: url('/frontend/font/Ios%2015%20Semibold.ttf') format('truetype'); font-weight: 600; }
+        @font-face { font-family: 'iOS15'; src: url('/frontend/font/Ios%2015%20Bold.ttf') format('truetype'); font-weight: 700; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --glass: rgba(255,255,255,0.03);
+            --glass-border: rgba(255,255,255,0.1);
+            --card-bg: rgba(255,255,255,0.05);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'iOS15', Tahoma, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Glass card ── */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+        }
+
+        /* ── Login ── */
+        #loginBox {
+            max-width: 400px;
+            margin: 60px auto;
+            text-align: center;
+        }
+
+        h2 { font-weight: 700; margin: 0 0 24px; }
+
+        input {
+            width: 100%;
+            padding: 13px 16px;
+            margin-bottom: 12px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
+        }
+
+        /* ── Buttons ── */
+        button {
+            padding: 11px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(99,102,241,0.35); }
+
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; }
+
+        .btn-success { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .btn-success:hover { background: var(--success); color: white; }
+
+        .btn-danger  { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        .btn-danger:hover  { background: var(--danger);  color: white; }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+        .logout-btn:hover { background: rgba(239,68,68,0.1); }
+
+        /* ── Misc ── */
+        .hidden { display: none !important; }
+        .error-msg { color: var(--danger); font-size: 0.88rem; margin-bottom: 8px; min-height: 1.2em; }
+
+        /* ── Panel header ── */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* ── Stats grid ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            padding: 20px 16px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .stat-card:hover { background: rgba(255,255,255,0.07); }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+        .stat-label { color: var(--text-dim); font-size: 0.82rem; }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: transparent;
+            color: var(--text-dim);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            flex-shrink: 0;
+        }
+        .tab:hover { color: white; background: rgba(255,255,255,0.05); }
+        .tab.active { background: var(--primary); color: white; }
+
+        /* ── Table: desktop ── */
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;          /* horizontal scroll if needed on mid screens */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 6px;
+            min-width: 520px;           /* prevent extreme squish before card mode kicks in */
+        }
+
+        th {
+            text-align: right;
+            padding: 10px 16px;
+            color: var(--text-dim);
+            font-weight: 500;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.9rem;
+        }
+        td:first-child { border-right: 1px solid var(--glass-border); border-radius: 0 10px 10px 0; }
+        td:last-child  { border-left:  1px solid var(--glass-border); border-radius: 10px 0 0 10px; }
+
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        /* ── Table: mobile card layout ── */
+        @media (max-width: 560px) {
+            .table-wrap { overflow-x: unset; }
+
+            table, thead, tbody, tr, th, td { display: block; }
+
+            thead { display: none; }   /* hide header row — labels shown via data-label */
+
+            tr {
+                background: rgba(255,255,255,0.04);
+                border: 1px solid var(--glass-border);
+                border-radius: 14px;
+                padding: 14px;
+                margin-bottom: 10px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px 12px;
+            }
+
+            td {
+                background: transparent;
+                border: none !important;
+                border-radius: 0 !important;
+                padding: 0;
+                font-size: 0.88rem;
+            }
+
+            td::before {
+                content: attr(data-label);
+                display: block;
+                font-size: 0.72rem;
+                color: var(--text-dim);
+                margin-bottom: 2px;
+                font-weight: 600;
+                letter-spacing: 0.03em;
+            }
+
+            /* actions cell spans full width */
+            td[data-label="عملیات"] {
+                grid-column: 1 / -1;
+            }
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 6px; }
+
+        /* ── Small body padding ── */
+        @media (max-width: 400px) {
+            body { padding: 10px; }
+            .glass-card { padding: 18px 14px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Login -->
+    <div id="loginBox" class="glass-card">
+        <h2>👑 ورود به مدیریت</h2>
+        <div id="error" class="error-msg"></div>
+        <input type="text"     id="username" placeholder="نام کاربری" autocomplete="username">
+        <input type="password" id="password" placeholder="رمز عبور"   autocomplete="current-password">
+        <button class="btn-primary" onclick="adminLogin()">ورود امن</button>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="glass-card hidden">
+
+        <div class="panel-header">
+            <h2>👑 پیشخوان مدیریت</h2>
+            <button class="logout-btn btn-sm" onclick="logout()">🚪 خروج امن</button>
+        </div>
+
+        <div class="stats-grid" id="stats"></div>
+
+        <div class="tabs">
+            <button class="tab active" id="tab-users"   onclick="showTab('users')">👥 کاربران</button>
+            <button class="tab"        id="tab-songs"   onclick="showTab('songs')">🎵 موسیقی‌ها</button>
+            <button class="tab"        id="tab-pending" onclick="showTab('pending')">⏳ در انتظار تأیید</button>
+        </div>
+
+        <div id="usersTab"   class="tab-content">
+            <div class="table-wrap" id="usersList"></div>
+        </div>
+        <div id="songsTab"   class="tab-content hidden">
+            <div class="table-wrap" id="songsList"></div>
+        </div>
+        <div id="pendingTab" class="tab-content hidden">
+            <div class="table-wrap" id="pendingList"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let token = localStorage.getItem('admin_token');
+
+    /* ── Login ── */
+    async function adminLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const errDiv   = document.getElementById('error');
+        errDiv.innerText = '';
+
+        if (!username || !password) {
+            errDiv.innerText = '❌ نام کاربری و رمز عبور را وارد کنید.';
+            return;
+        }
+
+        try {
+            const res  = await fetch('/login', {
+                method : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body   : JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                token = data.access_token;
+                localStorage.setItem('admin_token', token);
+                loadAdminPanel();
+            } else {
+                errDiv.innerText = '❌ ' + (data.detail || 'ورود ناموفق');
+            }
+        } catch(e) {
+            errDiv.innerText = '❌ خطای شبکه یا سرور';
+        }
+    }
+
+    /* Enter key on login */
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !document.getElementById('loginBox').classList.contains('hidden')) {
+            adminLogin();
+        }
+    });
+
+    /* ── Load panel ── */
+    async function loadAdminPanel() {
+        try {
+            const res   = await fetch('/admin/stats', { headers: auth() });
+            if (!res.ok) throw new Error('Unauthorized');
+            const stats = await res.json();
+
+            document.getElementById('loginBox').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card"><div class="stat-number">${stats.total_users}</div><div class="stat-label">کل کاربران</div></div>
+                <div class="stat-card"><div class="stat-number">${stats.total_songs}</div><div class="stat-label">کل آهنگ‌ها</div></div>
+                <div class="stat-card"><div class="stat-number" style="color:#fbbf24;-webkit-text-fill-color:#fbbf24">${stats.pending_songs}</div><div class="stat-label">در انتظار تأیید</div></div>
+                <div class="stat-card"><div class="stat-number">${stats.total_likes}</div><div class="stat-label">لایک‌ها</div></div>
+            `;
+
+            loadUsers();
+            loadAllSongs();
+            loadPendingSongs();
+            showTab('users', true);
+
+        } catch(e) {
+            forceLogout();
+        }
+    }
+
+    /* ── Users ── */
+    async function loadUsers() {
+        const res   = await fetch('/admin/users', { headers: auth() });
+        const users = await res.json();
+
+        document.getElementById('usersList').innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>شناسه</th><th>نام کاربری</th><th>سطح</th><th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                ${users.map(u => `
+                    <tr>
+                        <td data-label="شناسه">${u.id}</td>
+                        <td data-label="نام کاربری">${escapeHtml(u.username)}</td>
+                        <td data-label="سطح"><span style="color:${u.is_admin ? '#fbbf24' : 'var(--text-dim)'}">
+                            ${u.is_admin ? '👑 مدیر' : '👤 کاربر'}
+                        </span></td>
+                        <td data-label="عملیات">
+                            <div class="actions">
+                                ${!u.is_admin ? `<button class="btn-sm btn-success" onclick="makeAdmin(${u.id})">ارتقا</button>` : ''}
+                                <button class="btn-sm btn-danger" onclick="deleteUser(${u.id})">حذف</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('')}
+                </tbody>
+            </table>`;
+    }
+
+    /* ── Songs ── */
+    async function loadAllSongs() {
+        const res   = await fetch('/admin/songs', { headers: auth() });
+        const songs = await res.json();
+        document.getElementById('songsList').innerHTML = renderSongsTable(songs);
+    }
+
+    async function loadPendingSongs() {
+        const res     = await fetch('/admin/songs', { headers: auth() });
+        const songs   = await res.json();
+        const pending = songs.filter(s => !s.approved);
+        document.getElementById('pendingList').innerHTML = pending.length
+            ? renderSongsTable(pending)
+            : '<div style="padding:32px;text-align:center;color:var(--text-dim)">✅ هیچ موردی برای بررسی وجود ندارد.</div>';
+    }
+
+    function renderSongsTable(songs) {
+        return `
+            <table>
+                <thead>
+                    <tr>
+                        <th>شناسه</th><th>عنوان</th><th>خواننده</th>
+                        <th>لایک</th><th>وضعیت</th><th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                ${songs.map(s => `
+                    <tr>
+                        <td data-label="شناسه">${s.id}</td>
+                        <td data-label="عنوان">${escapeHtml(s.title)}</td>
+                        <td data-label="خواننده">${escapeHtml(s.artist)}</td>
+                        <td data-label="لایک">❤️ ${s.like_count || 0}</td>
+                        <td data-label="وضعیت"><span style="color:${s.approved ? 'var(--success)' : '#fbbf24'}">
+                            ${s.approved ? '✅ تأیید' : '⏳ در انتظار'}
+                        </span></td>
+                        <td data-label="عملیات">
+                            <div class="actions">
+                                ${!s.approved ? `<button class="btn-sm btn-success" onclick="approveSong(${s.id})">تأیید</button>` : ''}
+                                <button class="btn-sm btn-danger" onclick="deleteSong(${s.id})">حذف</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('')}
+                </tbody>
+            </table>`;
+    }
+
+    /* ── Actions ── */
+    async function makeAdmin(userId) {
+        if (!confirm('این کاربر به مدیر تبدیل شود؟')) return;
+        const res = await fetch(`/admin/make_admin/${userId}`, { method: 'POST', headers: auth() });
+        if (res.ok) loadUsers();
+    }
+
+    async function deleteUser(userId) {
+        if (!confirm('حذف کاربر غیرقابل بازگشت است. ادامه می‌دهید؟')) return;
+        const res = await fetch(`/admin/delete_user/${userId}`, { method: 'DELETE', headers: auth() });
+        if (res.ok) loadUsers();
+    }
+
+    async function approveSong(songId) {
+        const res = await fetch(`/admin/approve_song/${songId}`, { method: 'POST', headers: auth() });
+        if (res.ok) { loadAllSongs(); loadPendingSongs(); }
+    }
+
+    async function deleteSong(songId) {
+        if (!confirm('آیا از حذف این آهنگ مطمئن هستید؟')) return;
+        const res = await fetch(`/admin/delete_song/${songId}`, { method: 'DELETE', headers: auth() });
+        if (res.ok) { loadAllSongs(); loadPendingSongs(); }
+    }
+
+    /* ── Tabs ── */
+    function showTab(tab, skipActive = false) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById(tab + 'Tab').classList.remove('hidden');
+        if (!skipActive) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+    }
+
+    /* ── Logout ── */
+    async function logout() {
+        try { await fetch('/logout', { method: 'POST', headers: auth() }); } catch(e) {}
+        forceLogout();
+    }
+
+    function forceLogout() {
+        localStorage.removeItem('admin_token');
+        token = null;
+        document.getElementById('loginBox').classList.remove('hidden');
+        document.getElementById('adminPanel').classList.add('hidden');
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+    }
+
+    /* ── Helpers ── */
+    function auth() { return { 'Authorization': `Bearer ${token}` }; }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const d = document.createElement('div');
+        d.textContent = text;
+        return d.innerHTML;
+    }
+
+    /* ── Auto-login if token exists ── */
+    if (token) loadAdminPanel();
+</script>
+</body>
+</html>
