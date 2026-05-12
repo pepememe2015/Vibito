@@ -23,6 +23,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
+    security_question = Column(String, nullable=True)
+    security_answer = Column(String, nullable=True)
     is_admin = Column(Boolean, default=False)
 
 # ========== مدل هنرمند ==========

@@ -53,6 +53,8 @@ def get_db():
 class UserCreate(BaseModel):
     username: str
     password: str
+    security_question: str | None = None
+    security_answer: str | None = None
 
 class PasswordChange(BaseModel):
     old_password: str
@@ -208,6 +210,8 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     new_user = User(
         username=user.username,
         hashed_password=hash_password(user.password),
+        security_question=user.security_question,
+        security_answer=hash_password(user.security_answer) if user.security_answer else None,
         is_admin=False
     )
     db.add(new_user)
@@ -215,6 +219,34 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     token = create_token(new_user.id, new_user.username, db)
     return {"access_token": token, "token_type": "bearer", "user_id": new_user.id}
+
+# ========== فراموشی رمز عبور ==========
+@app.get("/forgot-password/question/{username}")
+def get_security_question(username: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(404, "User not found")
+    if not user.security_question:
+        raise HTTPException(400, "این کاربر سوال امنیتی تنظیم نکرده است.")
+    return {"question": user.security_question}
+
+class ResetPasswordRequest(BaseModel):
+    username: str
+    security_answer: str
+    new_password: str
+
+@app.post("/forgot-password/reset")
+def reset_password_with_question(data: ResetPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == data.username).first()
+    if not user or not user.security_answer:
+        raise HTTPException(404, "کاربر یافت نشد یا سوال امنیتی ندارد.")
+    
+    if not verify_password(data.security_answer, user.security_answer):
+        raise HTTPException(401, "پاسخ امنیتی اشتباه است.")
+    
+    user.hashed_password = hash_password(data.new_password)
+    db.commit()
+    return {"message": "رمز عبور با موفقیت تغییر کرد."}
 
 @app.post("/login")
 def login(user: UserCreate, db: Session = Depends(get_db)):
