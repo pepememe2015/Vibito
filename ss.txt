@@ -1,0 +1,15 @@
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+
+uvicorn main:app --reload
+
+
+cd G:\project\music_project\backend
+venv\Scripts\activate
+
+python create_admin.py
+
+uvicorn main:app --host 0.0.0.0 --port 8765 --reload
+
