@@ -111,7 +111,10 @@ def get_cover(song_id: int, db: Session = Depends(get_db)):
 # ========== مسیرهای عمومی ==========
 @app.get("/")
 def root():
-    return {"message": "API is running"}
+    index_path = os.path.join(frontend_path, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "API is running, but index.html was not found in frontend folder"}
 
 @app.get("/ping")
 def ping():
