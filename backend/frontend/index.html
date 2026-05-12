@@ -446,7 +446,36 @@
             .queue-item-artist { font-size: 0.6875rem; }
             
             /* Spotify-like Floating Mini Player */
-            .now-playing-bar { 
+            /* Global Upload Panel */
+        .global-upload-panel {
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            z-index: 3000;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            border: 1px solid var(--border-color);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .upload-panel-content { display: flex; flex-direction: column; gap: 10px; }
+        .upload-panel-info { display: flex; align-items: center; gap: 12px; }
+        .upload-panel-text { flex: 1; min-width: 0; }
+        #upload-filename { font-size: 0.875rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #upload-stats { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; }
+        .upload-panel-progress { width: 100%; height: 6px; background: var(--progress-bg); border-radius: 3px; overflow: hidden; }
+        .upload-progress-fill { width: 0%; height: 100%; background: var(--accent-color); transition: width 0.3s ease; }
+        .pulse-icon { color: var(--accent-color); animation: pulseScale 1.5s infinite; }
+        @keyframes pulseScale { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } }
+        
+        @media (min-width: 769px) {
+            .global-upload-panel { width: 350px; left: auto; right: 24px; bottom: 110px; }
+        }
+
+        .now-playing-bar { 
                 height: 56px; 
                 bottom: 12px; 
                 left: 12px; 
@@ -571,6 +600,22 @@
                 </div>
             </div>
             <div id="dynamic-content"></div>
+        </div>
+    </div>
+
+    <!-- پنل آپلود سراسری -->
+    <div id="global-upload-container" class="global-upload-panel" style="display: none;">
+        <div class="upload-panel-content">
+            <div class="upload-panel-info">
+                <i class="fas fa-cloud-upload-alt pulse-icon"></i>
+                <div class="upload-panel-text">
+                    <div id="upload-filename">در حال آپلود...</div>
+                    <div id="upload-stats">0% • باقی‌مانده: --:--</div>
+                </div>
+            </div>
+            <div class="upload-panel-progress">
+                <div id="upload-progress-fill" class="upload-progress-fill"></div>
+            </div>
         </div>
     </div>
 
@@ -1431,7 +1476,64 @@ window.deleteMySong = async function(sid){ if(!confirm(currentLang === 'fa' ? '�
 function setupUpload(){ const box=document.getElementById('uploadBox'),input=document.getElementById('songFileInput'); if(box){ box.onclick=()=>input.click(); box.ondragover=e=>{ e.preventDefault(); box.classList.add('drag-over'); }; box.ondragleave=()=>box.classList.remove('drag-over'); box.ondrop=e=>{ e.preventDefault(); box.classList.remove('drag-over'); if(e.dataTransfer.files.length) handleFileSelect(e.dataTransfer.files[0]); }; } if(input) input.onchange=e=>{ if(e.target.files.length) handleFileSelect(e.target.files[0]); }; }
 function handleFileSelect(file){ if(!file||file.type!=='audio/mpeg'){ window.showToast(currentLang === 'fa' ? 'فایل MP3 معتبر' : 'Valid MP3 file', true); return; } selectedFile=file; const fn=file.name.replace('.mp3',''); const parts=fn.split('-'); let title=fn,artist='Unknown'; if(parts.length>=2){ artist=parts[0].trim(); title=parts.slice(1).join('-').trim(); } document.getElementById('uploadPreviewContainer').innerHTML=`<div class="upload-preview" id="uploadPreview"><div class="preview-info"><div class="preview-cover"><i class="fas fa-compact-disc"></i></div><div class="preview-details"><h4>${escapeHtml(title)}</h4><p>${escapeHtml(artist)}</p><p>${(file.size/(1024*1024)).toFixed(2)} MB</p></div></div><div><button class="preview-remove" onclick="cancelUpload()"><i class="fas fa-times"></i></button><button class="btn-submit-upload" id="submitUploadBtn" onclick="submitUpload()"><i class="fas fa-cloud-upload-alt"></i> ${translations[currentLang].upload}</button></div></div>`; }
 function cancelUpload(){ selectedFile=null; document.getElementById('uploadPreviewContainer').innerHTML=''; document.getElementById('songFileInput').value=''; }
-async function submitUpload(){ if(!token){ window.showToast(currentLang === 'fa' ? 'وارد شوید' : 'Please login', true); return; } if(!selectedFile){ window.showToast(currentLang === 'fa' ? 'فایلی انتخاب نشده' : 'No file selected', true); return; } const fd=new FormData(); fd.append('file',selectedFile); const msg=document.getElementById('uploadMsg'),btn=document.getElementById('submitUploadBtn'); if(btn){ btn.innerHTML='<div class="upload-spinner"></div> ' + translations[currentLang].uploading; btn.disabled=true; } if(msg) msg.innerHTML=translations[currentLang].uploading; try{ const res=await fetch('/upload/',{method:'POST',headers:{'Authorization':`Bearer ${token}`},body:fd}); if(res.ok){ if(msg){ msg.innerHTML=translations[currentLang].uploadSuccess; msg.style.color='#22c55e'; } cancelUpload(); await loadMySongs(); setTimeout(()=>{ if(msg) msg.innerHTML=''; },2000); }else{ if(msg){ msg.innerHTML=translations[currentLang].uploadError; msg.style.color='#f44336'; } window.showToast(translations[currentLang].uploadError, true); } }catch(e){ if(msg){ msg.innerHTML=translations[currentLang].uploadError; msg.style.color='#f44336'; } window.showToast(translations[currentLang].uploadError, true); }finally{ if(btn){ btn.innerHTML='<i class="fas fa-cloud-upload-alt"></i> ' + translations[currentLang].upload; btn.disabled=false; } } }
+async function submitUpload(){ 
+    if(!token){ window.showToast(currentLang === 'fa' ? 'وارد شوید' : 'Please login', true); return; } 
+    if(!selectedFile){ window.showToast(currentLang === 'fa' ? 'فایلی انتخاب نشده' : 'No file selected', true); return; } 
+    
+    const fd = new FormData(); 
+    fd.append('file', selectedFile); 
+    
+    const globalPanel = document.getElementById('global-upload-container');
+    const progressFill = document.getElementById('upload-progress-fill');
+    const statsText = document.getElementById('upload-stats');
+    const filenameText = document.getElementById('upload-filename');
+    
+    filenameText.innerText = selectedFile.name;
+    globalPanel.style.display = 'block';
+    
+    // پاک کردن پیش‌نمایش در صفحه My Songs
+    cancelUpload(); 
+
+    const xhr = new XMLHttpRequest();
+    const startTime = Date.now();
+
+    xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            progressFill.style.width = percent + '%';
+            
+            // محاسبه زمان باقی‌مانده
+            const elapsedTime = (Date.now() - startTime) / 1000; // ثانیه
+            const uploadSpeed = e.loaded / elapsedTime; // بایت بر ثانیه
+            const remainingBytes = e.total - e.loaded;
+            const remainingTime = remainingBytes / uploadSpeed;
+            
+            const timeStr = remainingTime > 0 ? formatTime(remainingTime) : '--:--';
+            statsText.innerText = `${percent}% • ${currentLang === 'fa' ? 'باقی‌مانده' : 'Remaining'}: ${timeStr}`;
+        }
+    });
+
+    xhr.onreadystatechange = async () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200 || xhr.status === 201) {
+                window.showToast(currentLang === 'fa' ? 'آپلود با موفقیت انجام شد' : 'Upload successful');
+                if (currentView === 'mysongs') await loadMySongs();
+                await loadHome();
+            } else {
+                window.showToast(currentLang === 'fa' ? 'خطا در آپلود' : 'Upload error', true);
+            }
+            // مخفی کردن پنل بعد از چند ثانیه
+            setTimeout(() => {
+                globalPanel.style.display = 'none';
+                progressFill.style.width = '0%';
+            }, 3000);
+        }
+    };
+
+    xhr.open('POST', '/upload/', true);
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.send(fd);
+}
 
 // ========== لایک شده‌ها ==========
 async function loadLikedSongs() { 
