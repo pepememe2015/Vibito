@@ -556,6 +556,59 @@
         .now-playing-bar.empty .mini-player-text h4, .now-playing-bar.empty .mini-player-text p { color: var(--text-secondary); }
         .now-playing-bar.empty .mini-player-controls button { color: var(--text-secondary); opacity: 0.5; cursor: default; }
 
+        /* Gramophone Tonearm Styles */
+        .expanded-cover-container { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; margin: 20px 0; }
+        .tonearm {
+            position: absolute;
+            top: -30px;
+            right: 15%;
+            width: 80px;
+            height: 160px;
+            pointer-events: none;
+            z-index: 10;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: 80% 10%;
+            transform: rotate(-45deg);
+        }
+        .tonearm.playing {
+            transform: rotate(-5deg);
+        }
+        .tonearm-base {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #666, #111);
+            border-radius: 50%;
+            border: 3px solid #222;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .tonearm-arm {
+            position: absolute;
+            top: 20px;
+            right: 18px;
+            width: 5px;
+            height: 120px;
+            background: linear-gradient(to bottom, #aaa, #333);
+            border-radius: 3px;
+            transform-origin: top center;
+        }
+        .tonearm-head {
+            position: absolute;
+            bottom: -5px;
+            left: -8px;
+            width: 22px;
+            height: 12px;
+            background: #222;
+            border-radius: 3px;
+            transform: rotate(15deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .expanded-cover.playing { animation: spinRecord 15s linear infinite; }
+        @keyframes spinRecord { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+
     </style>
 </head>
 <body class="theme-emerald">
@@ -641,8 +694,14 @@
     <div class="expanded-player" id="expandedPlayer">
         <div class="expanded-bg" id="expandedBg"></div>
         <button class="expanded-close" onclick="window.closeExpandedPlayer()"><i class="fas fa-chevron-down"></i></button>
-        <div class="expanded-cover-container" style="position: relative;">
+        <div class="expanded-cover-container">
             <div class="expanded-cover" id="expandedCoverCircle"><img id="expCoverImg" src=""></div>
+            <div id="tonearm" class="tonearm">
+                <div class="tonearm-base"></div>
+                <div class="tonearm-arm">
+                    <div class="tonearm-head"></div>
+                </div>
+            </div>
         </div>
         <div class="expanded-info-row">
             <div class="expanded-text">
@@ -1158,9 +1217,15 @@ function updatePlayButtonUI() {
     if (exp) exp.innerHTML = `<i class="fas ${icon}"></i>`; 
     
     const coverCircle = document.getElementById('expandedCoverCircle');
+    const tonearm = document.getElementById('tonearm');
     if (coverCircle) {
-        if (isPlaying) coverCircle.classList.add('playing');
-        else coverCircle.classList.remove('playing');
+        if (isPlaying) {
+            coverCircle.classList.add('playing');
+            if(tonearm) tonearm.classList.add('playing');
+        } else {
+            coverCircle.classList.remove('playing');
+            if(tonearm) tonearm.classList.remove('playing');
+        }
     }
     
     if (isPlaying && audioCtx && audioCtx.state === 'suspended') {
