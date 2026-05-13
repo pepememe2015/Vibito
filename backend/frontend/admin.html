@@ -444,7 +444,7 @@
                 <thead>
                     <tr>
                         <th>شناسه</th><th>عنوان</th><th>خواننده</th>
-                        <th>لایک</th><th>وضعیت</th><th>عملیات</th>
+                        <th>آپلودر</th><th>لایک</th><th>وضعیت</th><th>عملیات</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -453,6 +453,7 @@
                         <td data-label="شناسه">${s.id}</td>
                         <td data-label="عنوان">${escapeHtml(s.title)}</td>
                         <td data-label="خواننده">${escapeHtml(s.artist)}</td>
+                        <td data-label="آپلودر" style="color:var(--primary); font-weight:500;">${escapeHtml(s.uploader)}</td>
                         <td data-label="لایک">❤️ ${s.like_count || 0}</td>
                         <td data-label="وضعیت"><span style="color:${s.approved ? 'var(--success)' : '#fbbf24'}">
                             ${s.approved ? '✅ تأیید' : '⏳ در انتظار'}

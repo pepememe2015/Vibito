@@ -63,6 +63,7 @@ class Song(Base):
     
     artist = relationship("Artist", back_populates="songs")
     album = relationship("Album", back_populates="songs")
+    user = relationship("User")
 
 # ========== مدل لایک ==========
 class UserLike(Base):

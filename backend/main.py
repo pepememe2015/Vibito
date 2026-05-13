@@ -603,7 +603,8 @@ def admin_songs(admin: User = Depends(get_admin_user), db: Session = Depends(get
             "title": song.title,
             "artist": song.artist.name if song.artist else "Unknown",
             "approved": song.approved,
-            "like_count": like_count
+            "like_count": like_count,
+            "uploader": song.user.username if song.user else "Unknown"
         })
     return result
 
