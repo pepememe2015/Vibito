@@ -1142,6 +1142,11 @@ function playSong(song, queueSongs) {
     audio.play(); 
     updateNowPlayingUI(); 
     fetchPlay(song.id); 
+
+    // ذخیره آهنگ فعلی در حافظه
+    localStorage.setItem('lastPlayedSong', JSON.stringify(song));
+    localStorage.setItem('lastQueue', JSON.stringify(currentQueue));
+    localStorage.setItem('lastQueueIndex', currentQueueIndex);
 }
 
 window.downloadSong = function(sid) {
@@ -1236,6 +1241,11 @@ function updateProgress() {
     document.getElementById('miniProgressFill').style.width = percent + '%'; 
     document.getElementById('expCurrentTime').innerText = formatTime(audio.currentTime); 
     document.getElementById('expTotalTime').innerText = formatTime(audio.duration); 
+    
+    // ذخیره ثانیه فعلی (هر ۱ ثانیه یکبار برای بهینه بودن)
+    if (currentPlayingSong && audio.currentTime > 0) {
+        localStorage.setItem('lastPlayedTime', audio.currentTime);
+    }
 }
 
 window.seekExpanded = function(e) { 
@@ -1924,6 +1934,40 @@ window.playFromPopular = function(sid){ const s=popularSongs.find(x=>x.id===sid)
             audio.volume = 0.7;
             setupMediaSession();
             setLanguage(localStorage.getItem('language') || 'fa');
+
+            // بازیابی وضعیت پخش قبلی
+            restorePlaybackState();
+        }
+
+        function restorePlaybackState() {
+            try {
+                const savedSong = localStorage.getItem('lastPlayedSong');
+                const savedTime = localStorage.getItem('lastPlayedTime');
+                const savedQueue = localStorage.getItem('lastQueue');
+                const savedIndex = localStorage.getItem('lastQueueIndex');
+
+                if (savedSong) {
+                    currentPlayingSong = JSON.parse(savedSong);
+                    if (savedQueue) {
+                        currentQueue = JSON.parse(savedQueue);
+                        currentQueueIndex = parseInt(savedIndex) || 0;
+                    } else {
+                        currentQueue = [currentPlayingSong];
+                        currentQueueIndex = 0;
+                    }
+
+                    audio.src = `/stream/${currentPlayingSong.id}`;
+                    audio.load(); // فقط لود می‌کنیم بدون پلی خودکار
+                    
+                    if (savedTime) {
+                        audio.currentTime = parseFloat(savedTime);
+                    }
+                    
+                    updateNowPlayingUI();
+                    updateQueueDisplay();
+                    updateProgress();
+                }
+            } catch (e) { console.error("Error restoring playback state:", e); }
         }
         
         // نمایش پلی‌لیست اشتراک‌گذاری شده
