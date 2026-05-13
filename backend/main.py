@@ -110,6 +110,9 @@ def get_cover(song_id: int, db: Session = Depends(get_db)):
                     mime = tag.mime if tag.mime else 'image/jpeg'
                     return StreamingResponse(io.BytesIO(image_data), media_type=mime)
         return default_cover()
+    except Exception as e:
+        print(f"Error getting cover for song {song_id}: {e}")
+        return default_cover()
 
 def extract_and_save_cover(song_id: int, file_path: str):
     try:
@@ -127,9 +130,6 @@ def extract_and_save_cover(song_id: int, file_path: str):
     except Exception as e:
         print(f"Error extracting cover for song {song_id}: {e}")
         return False
-    except Exception as e:
-        print(f"Error getting cover for song {song_id}: {e}")
-        return default_cover()
 
 # ========== مسیرهای عمومی ==========
 @app.get("/")
