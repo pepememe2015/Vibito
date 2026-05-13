@@ -82,6 +82,11 @@
         body.theme-emerald { --accent-color: #10b981; --accent-glow: rgba(16,185,129,0.2); --accent-hover: #059669; --progress-fill: #10b981; --like-color: #10b981; --scrollbar-thumb: #10b981; }
         body.theme-rose { --accent-color: #f43f5e; --accent-glow: rgba(244,63,94,0.2); --accent-hover: #e11d48; --progress-fill: #f43f5e; --like-color: #f43f5e; --scrollbar-thumb: #f43f5e; }
         body.theme-slate { --accent-color: #64748b; --accent-glow: rgba(100,116,139,0.2); --accent-hover: #475569; --progress-fill: #64748b; --like-color: #64748b; --scrollbar-thumb: #64748b; }
+        body.theme-orange { --accent-color: #f97316; --accent-glow: rgba(249,115,22,0.2); --accent-hover: #ea580c; --progress-fill: #f97316; --like-color: #f97316; --scrollbar-thumb: #f97316; }
+        body.theme-cyan { --accent-color: #06b6d4; --accent-glow: rgba(6,182,212,0.2); --accent-hover: #0891b2; --progress-fill: #06b6d4; --like-color: #06b6d4; --scrollbar-thumb: #06b6d4; }
+        body.theme-lime { --accent-color: #84cc16; --accent-glow: rgba(132,204,22,0.2); --accent-hover: #65a30d; --progress-fill: #84cc16; --like-color: #84cc16; --scrollbar-thumb: #84cc16; }
+        body.theme-pink { --accent-color: #ec4899; --accent-glow: rgba(236,72,153,0.2); --accent-hover: #db2777; --progress-fill: #ec4899; --like-color: #ec4899; --scrollbar-thumb: #ec4899; }
+        body.theme-indigo { --accent-color: #6366f1; --accent-glow: rgba(99,102,241,0.2); --accent-hover: #4f46e5; --progress-fill: #6366f1; --like-color: #6366f1; --scrollbar-thumb: #6366f1; }
         body.light-mode { --bg-primary: #f8fafc; --bg-secondary: #ffffff; --bg-card: #ffffff; --bg-card-hover: #f1f5f9; --bg-sidebar: #ffffff; --text-primary: #0f172a; --text-secondary: #475569; --border-color: #e2e8f0; --progress-bg: #e2e8f0; --scrollbar-thumb: var(--accent-color); }
         body { font-family: 'iOS15', 'Segoe UI', Roboto, Arial, sans-serif; background-color: var(--bg-primary); color: var(--text-primary); height: 100vh; overflow: hidden; width: 100%; }
         ::-webkit-scrollbar { width: 5px; height: 5px; background: transparent; }
@@ -133,6 +138,11 @@
         .theme-emerald-btn { background: linear-gradient(135deg, #10b981, #059669); }
         .theme-rose-btn { background: linear-gradient(135deg, #f43f5e, #e11d48); }
         .theme-slate-btn { background: linear-gradient(135deg, #64748b, #475569); }
+        .theme-orange-btn { background: linear-gradient(135deg, #f97316, #ea580c); }
+        .theme-cyan-btn { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .theme-lime-btn { background: linear-gradient(135deg, #84cc16, #65a30d); }
+        .theme-pink-btn { background: linear-gradient(135deg, #ec4899, #db2777); }
+        .theme-indigo-btn { background: linear-gradient(135deg, #6366f1, #4f46e5); }
         .mode-toggle { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--bg-card); border-radius: 40px; margin-top: 15px; cursor: pointer; border: 1px solid var(--border-color); }
         .mode-toggle:hover { border-color: var(--accent-color); background: var(--bg-card-hover); }
         .main-container { display: flex; height: 100vh; overflow: hidden; width: 100%; max-width: 100vw; }
@@ -604,6 +614,11 @@
                     <div class="theme-btn theme-emerald-btn" onclick="window.setTheme('emerald')"></div>
                     <div class="theme-btn theme-rose-btn" onclick="window.setTheme('rose')"></div>
                     <div class="theme-btn theme-slate-btn" onclick="window.setTheme('slate')"></div>
+                    <div class="theme-btn theme-orange-btn" onclick="window.setTheme('orange')"></div>
+                    <div class="theme-btn theme-cyan-btn" onclick="window.setTheme('cyan')"></div>
+                    <div class="theme-btn theme-lime-btn" onclick="window.setTheme('lime')"></div>
+                    <div class="theme-btn theme-pink-btn" onclick="window.setTheme('pink')"></div>
+                    <div class="theme-btn theme-indigo-btn" onclick="window.setTheme('indigo')"></div>
                 </div>
                 <div class="mode-toggle" onclick="window.toggleMode()"><span><i class="fas fa-moon"></i> <span data-i18n="nightMode">حالت شب</span></span><i class="fas fa-adjust"></i></div>
             </div>
