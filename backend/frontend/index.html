@@ -1032,6 +1032,29 @@ function playNextInQueue() {
     }
 }
 
+function setupMediaSession() {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', () => {
+            audio.play();
+            navigator.mediaSession.playbackState = "playing";
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+            audio.pause();
+            navigator.mediaSession.playbackState = "paused";
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', () => window.previousSong());
+        navigator.mediaSession.setActionHandler('nexttrack', () => window.nextSong());
+        
+        // پشتیبانی از جلو/عقب بردن در صفحه قفل
+        navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+            audio.currentTime = Math.max(audio.currentTime - (details.seekOffset || 10), 0);
+        });
+        navigator.mediaSession.setActionHandler('seekforward', (details) => {
+            audio.currentTime = Math.min(audio.currentTime + (details.seekOffset || 10), audio.duration);
+        });
+    }
+}
+
 function fetchPlay(songId) { if (!token) return; fetch(`/play/?song_id=${songId}`, {method:'POST',headers:{'Authorization':`Bearer ${token}`}}).catch(e=>{}); }
 
 // ========== گرینگ و تم ==========
@@ -1143,6 +1166,23 @@ function updateNowPlayingUI() {
     document.body.classList.add('player-active'); 
     updatePlayerLikeButton(); 
     updatePlayButtonUI(); 
+
+    // بروزرسانی Media Session برای کنترل در صفحه قفل و پس‌زمینه
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: currentPlayingSong.title,
+            artist: currentPlayingSong.artist,
+            album: 'Vibinoo',
+            artwork: [
+                { src: cover, sizes: '96x96',   type: 'image/jpeg' },
+                { src: cover, sizes: '128x128', type: 'image/jpeg' },
+                { src: cover, sizes: '192x192', type: 'image/jpeg' },
+                { src: cover, sizes: '256x256', type: 'image/jpeg' },
+                { src: cover, sizes: '384x384', type: 'image/jpeg' },
+                { src: cover, sizes: '512x512', type: 'image/jpeg' },
+            ]
+        });
+    }
 }
 
 function updatePlayerLikeButton() { 
@@ -1868,10 +1908,19 @@ window.playFromPopular = function(sid){ const s=popularSongs.find(x=>x.id===sid)
             }
 
             audio.addEventListener('timeupdate', updateProgress);
-            audio.addEventListener('play', ()=>{ isPlaying=true; updatePlayButtonUI(); });
-            audio.addEventListener('pause', ()=>{ isPlaying=false; updatePlayButtonUI(); });
+            audio.addEventListener('play', ()=>{ 
+                isPlaying=true; 
+                updatePlayButtonUI(); 
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
+            });
+            audio.addEventListener('pause', ()=>{ 
+                isPlaying=false; 
+                updatePlayButtonUI(); 
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused";
+            });
             audio.addEventListener('ended', ()=>{ window.nextSong(); });
             audio.volume = 0.7;
+            setupMediaSession();
             setLanguage(localStorage.getItem('language') || 'fa');
         }
         
