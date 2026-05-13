@@ -1115,7 +1115,7 @@ function fetchPlay(songId) { if (!token) return; fetch(`/play/?song_id=${songId}
 // ========== گرینگ و تم ==========
 window.getGreeting = function() { const h = new Date().getHours(); if (h>=5 && h<12) return { text: (currentLang === 'fa' ? 'صبح بخیر' : 'Good Morning'), icon:"fas fa-sun" }; if (h>=12 && h<17) return { text: (currentLang === 'fa' ? 'بعدازظهر بخیر' : 'Good Afternoon'), icon:"fas fa-sun" }; if (h>=17 && h<21) return { text: (currentLang === 'fa' ? 'عصر بخیر' : 'Good Evening'), icon:"fas fa-cloud-sun" }; return { text: (currentLang === 'fa' ? 'شب بخیر' : 'Good Night'), icon:"fas fa-moon" }; }
 window.setTheme = function(t) { 
-    ['purple','blue','emerald','rose','slate'].forEach(th=>document.body.classList.remove(`theme-${th}`)); 
+    ['purple','blue','emerald','rose','slate','orange','cyan','lime','pink','indigo'].forEach(th=>document.body.classList.remove(`theme-${th}`)); 
     document.body.classList.add(`theme-${t}`); 
     localStorage.setItem('theme',t); 
     document.querySelectorAll('.theme-btn').forEach(btn=>btn.classList.remove('active')); 
