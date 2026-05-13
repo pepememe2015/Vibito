@@ -55,27 +55,6 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/robots.txt")
-def get_robots():
-    robots_path = os.path.join(frontend_path, "robots.txt")
-    if os.path.exists(robots_path):
-        return FileResponse(robots_path)
-    return "User-agent: *\nAllow: /"
-
-@app.get("/sitemap.xml")
-def get_sitemap(db: Session = Depends(get_db)):
-    try:
-        # استفاده مستقیم از Song به جای models.Song برای اطمینان از صحت مدل
-        all_songs = db.query(Song).all()
-        xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        xml += '  <url><loc>https://vibinoo.ir/</loc><priority>1.0</priority></url>\n'
-        for s in all_songs:
-            xml += f'  <url><loc>https://vibinoo.ir/#song-{s.id}</loc><priority>0.8</priority></url>\n'
-        xml += '</urlset>'
-        return StreamingResponse(io.BytesIO(xml.encode()), media_type="application/xml")
-    except Exception as e:
-        return StreamingResponse(io.BytesIO(b'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://vibinoo.ir/</loc></url></urlset>'), media_type="application/xml")
 
 # ========== مدل ساده ==========
 class UserCreate(BaseModel):
@@ -156,6 +135,15 @@ def extract_and_save_cover(song_id: int, file_path: str):
         return False
 
 # ========== مسیرهای عمومی ==========
+# مسیر برای فایل‌های تاییدیه گوگل و سایر فایل‌های ریشه (مثل googleXXXX.html)
+@app.get("/{filename}.html", response_class=FileResponse)
+async def serve_root_html(filename: str):
+    file_path = os.path.join(frontend_path, f"{filename}.html")
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    # اگر فایل وجود نداشت اما درخواست برای ایندکس بود، ایندکس را برگردان (برای SPA)
+    return FileResponse(os.path.join(frontend_path, "index.html"))
+
 @app.get("/")
 def root():
     index_path = os.path.join(frontend_path, "index.html")
