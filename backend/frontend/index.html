@@ -1450,7 +1450,17 @@ function shuffleAllSongs() {
     for(let i=shuffled.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]; } 
     if(shuffled[0]) playSong(shuffled[0],shuffled); 
 }
-async function checkLikedStatus(songs) { if(!token) return; for(const s of songs){ try{ const res=await fetch(`/like/status/${s.id}`,{headers:{'Authorization':`Bearer ${token}`}}); if(res.ok) likedStatus.set(s.id,(await res.json()).liked); }catch(e){} } }
+async function checkLikedStatus(songs) { 
+    if(!token) return; 
+    try {
+        const res = await fetch('/liked-song-ids/', {headers:{'Authorization':`Bearer ${token}`}});
+        if(res.ok) {
+            const likedIds = await res.json();
+            likedStatus.clear();
+            likedIds.forEach(id => likedStatus.set(id, true));
+        }
+    } catch(e) { console.error("Error checking liked status:", e); }
+}
 async function loadUserPlayHistory() { if(!token) return; try{ const res=await fetch('/user-play-history/',{headers:{'Authorization':`Bearer ${token}`}}); if(res.ok) userPlayHistory=await res.json(); else userPlayHistory=[]; }catch(e){ userPlayHistory=[]; } }
 function analyzeTopArtists() { 
     if(!userPlayHistory.length) { topArtists = []; return; } 

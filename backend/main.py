@@ -640,6 +640,14 @@ def get_liked_songs(
         })
     
     return {"total": total, "items": result}
+    
+@app.get("/liked-song-ids/")
+def get_liked_song_ids(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    likes = db.query(UserLike.song_id).filter(UserLike.user_id == current_user.id).all()
+    return [like.song_id for like in likes]
 
 # ========== دریافت آهنگ‌های آپلود شده توسط کاربر جاری ==========
 @app.get("/my-songs/")
