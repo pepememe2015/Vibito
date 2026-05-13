@@ -1037,26 +1037,38 @@ window.playFromQueue = function(index) {
     } 
 }
 
-function playNextInQueue() {
-    if (repeatMode === 'one') { audio.currentTime = 0; audio.play(); return; }
+async function playNextInQueue() {
+    if (repeatMode === 'one') { audio.currentTime = 0; try { await audio.play(); } catch(e) { console.error(e); } return; }
     if (isShuffle) {
         if (currentQueue.length <= 1) { if (currentQueue.length===1) { audio.currentTime=0; audio.play(); return; } return; }
         let newIdx = currentQueueIndex;
         while (newIdx === currentQueueIndex && currentQueue.length>1) newIdx = Math.floor(Math.random()*currentQueue.length);
         currentQueueIndex = newIdx; currentPlayingSong = currentQueue[currentQueueIndex];
-        audio.src = `/stream/${currentPlayingSong.id}`; audio.play();
-        updateNowPlayingUI(); updateQueueDisplay(); fetchPlay(currentPlayingSong.id);
-        return;
+    } else {
+        if (currentQueueIndex + 1 < currentQueue.length) {
+            currentQueueIndex++; currentPlayingSong = currentQueue[currentQueueIndex];
+        } else if (repeatMode === 'all' && currentQueue.length > 0) {
+            currentQueueIndex = 0; currentPlayingSong = currentQueue[0];
+        } else {
+            return; // ته لیست و حالت تکرار خاموش
+        }
     }
-    if (currentQueueIndex + 1 < currentQueue.length) {
-        currentQueueIndex++; currentPlayingSong = currentQueue[currentQueueIndex];
-        audio.src = `/stream/${currentPlayingSong.id}`; audio.play();
-        updateNowPlayingUI(); updateQueueDisplay(); fetchPlay(currentPlayingSong.id);
-    } else if (repeatMode === 'all' && currentQueue.length > 0) {
-        currentQueueIndex = 0; currentPlayingSong = currentQueue[0];
-        audio.src = `/stream/${currentPlayingSong.id}`; audio.play();
-        updateNowPlayingUI(); updateQueueDisplay(); fetchPlay(currentPlayingSong.id);
-    }
+    
+    // وقفه بسیار کوتاه برای جلوگیری از تداخل مرورگر
+    setTimeout(async () => {
+        try {
+            audio.src = `/stream/${currentPlayingSong.id}`; 
+            audio.load();
+            await audio.play();
+            updateNowPlayingUI(); 
+            updateQueueDisplay(); 
+            fetchPlay(currentPlayingSong.id);
+        } catch(e) { 
+            console.error("Autoplay failed, trying again...", e);
+            // تلاش مجدد بعد از ۱ ثانیه در صورت خطا
+            setTimeout(() => { audio.play().catch(err => console.log("Still blocked")); }, 1000);
+        }
+    }, 100);
 }
 
 function setupMediaSession() {
@@ -1165,8 +1177,15 @@ function playSong(song, queueSongs) {
     currentPlayingSong = song; 
     if (queueSongs && queueSongs.length) buildQueueFromSongs(queueSongs, song.id);
     else { currentQueue = [song]; currentQueueIndex = 0; updateQueueDisplay(); } 
+    
     audio.src = `/stream/${song.id}`; 
-    audio.play(); 
+    audio.load();
+    audio.play().catch(e => {
+        console.error("Playback failed:", e);
+        // اگر مرورگر اجازه نداد، یک تعامل کاربر لازم است، اما اینجا تلاش مجدد می‌کنیم
+        setTimeout(() => audio.play(), 500);
+    }); 
+    
     updateNowPlayingUI(); 
     fetchPlay(song.id); 
 
