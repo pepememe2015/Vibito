@@ -36,6 +36,10 @@ UPLOAD_DIR = "uploads"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
+COVERS_DIR = os.path.join(UPLOAD_DIR, "covers")
+if not os.path.exists(COVERS_DIR):
+    os.makedirs(COVERS_DIR)
+
 frontend_path = os.path.join(os.path.dirname(__file__), "frontend")
 if os.path.exists(frontend_path):
     app.mount("/frontend", StaticFiles(directory=frontend_path), name="frontend")
@@ -106,6 +110,23 @@ def get_cover(song_id: int, db: Session = Depends(get_db)):
                     mime = tag.mime if tag.mime else 'image/jpeg'
                     return StreamingResponse(io.BytesIO(image_data), media_type=mime)
         return default_cover()
+
+def extract_and_save_cover(song_id: int, file_path: str):
+    try:
+        audio = MP3(file_path, ID3=ID3)
+        if audio.tags:
+            for tag in audio.tags.values():
+                if isinstance(tag, APIC):
+                    image_data = tag.data
+                    # Save as jpg
+                    cover_path = os.path.join(COVERS_DIR, f"{song_id}.jpg")
+                    with open(cover_path, "wb") as f:
+                        f.write(image_data)
+                    return True
+        return False
+    except Exception as e:
+        print(f"Error extracting cover for song {song_id}: {e}")
+        return False
     except Exception as e:
         print(f"Error getting cover for song {song_id}: {e}")
         return default_cover()
@@ -478,6 +499,9 @@ async def upload_song(
     db.add(new_song)
     db.commit()
     db.refresh(new_song)
+    
+    # استخراج کاور به صورت استاتیک
+    extract_and_save_cover(new_song.id, final_path)
     
     return {"message": "Uploaded successfully!", "song_id": new_song.id}
 
