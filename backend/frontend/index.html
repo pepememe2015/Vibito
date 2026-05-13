@@ -5,39 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
 
     <!-- ========== SEO Meta Tags ========== -->
-    <title>وایبینو | پلتفرم موسیقی</title>
-    <meta name="description" content="ویبینو - موزیک پلیر ایرانی. بهترین آهنگ‌های فارسی و خارجی را آنلاین بشنوید. Vibinoo - Listen to the best Persian and international music online." />
-    <meta name="keywords" content="موزیک پلیر, موسیقی آنلاین, آهنگ فارسی, ویبینو, Vibinoo, music player, persian music, آهنگ ایرانی, پلی لیست" />
-    <meta name="author" content="Vibinoo" />
+    <title>وایبینو | پخش آنلاین موسیقی و دانلود آهنگ جدید</title>
+    <meta name="description" content="وایبینو (Vibinoo) بهترین پلتفرم پخش آنلاین موسیقی ایرانی و خارجی. همین حالا آهنگ‌های جدید را با بالاترین کیفیت بشنوید و لذت ببرید. مرجع اصلی موسیقی و پلی‌لیست‌های داغ." />
+    <meta name="keywords" content="آهنگ جدید, دانلود آهنگ, پخش آنلاین موسیقی, وایبینو, Vibinoo, موزیک ایرانی, ریمیکس جدید, پلی‌لیست غمگین, آهنگ شاد, موزیک پلیر آنلاین, بهترین سایت موزیک" />
+    <meta name="author" content="Vibinoo Team" />
     <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#10b981" />
     <link rel="canonical" href="https://vibinoo.ir/" />
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://vibinoo.ir/sitemap.xml" />
+    
+    <!-- ========== Favicons & Mobile Apps ========== -->
+    <link rel="icon" type="image/png" href="/frontend/img/favicon.png">
+    <link rel="apple-touch-icon" href="/frontend/img/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- ========== Open Graph (برای اشتراک‌گذاری در شبکه‌های اجتماعی) ========== -->
+    <!-- ========== Open Graph (Social Sharing) ========== -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://vibinoo.ir/" />
-    <meta property="og:title" content="وایبینو | پلتفرم موسیقی" />
-    <meta property="og:description" content="ویبینو - پلتفرم موزیک آنلاین ایرانی. هر آهنگی که دوست داری، اینجاست." />
+    <meta property="og:title" content="وایبینو | گوش بده، حس کن، زندگی کن" />
+    <meta property="og:description" content="جدیدترین آهنگ‌های ایرانی و خارجی در وایبینو. همین حالا رایگان گوش دهید." />
+    <meta property="og:image" content="https://vibinoo.ir/frontend/img/og-image.jpg" />
     <meta property="og:site_name" content="Vibinoo" />
     <meta property="og:locale" content="fa_IR" />
 
-    <!-- ========== Twitter Card ========== -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="وایبینو | پلتفرم موسیقی" />
-    <meta name="twitter:description" content="ویبینو - پلتفرم موزیک آنلاین ایرانی." />
-
-    <!-- ========== اسکیما برای موتورهای جستجو ========== -->
+    <!-- ========== JSON-LD Structured Data ========== -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Vibinoo",
+      "@type": "MusicPlaylist",
+      "name": "Vibinoo Music Platform",
       "url": "https://vibinoo.ir",
-      "description": "پلتفرم موزیک آنلاین ایرانی - گوش کن، حس کن",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://vibinoo.ir/?q={search_term_string}",
-        "query-input": "required name=search_term_string"
+      "description": "The ultimate platform for Persian and International music streaming.",
+      "genre": "Persian Pop, International, Remix",
+      "provider": {
+        "@type": "Organization",
+        "name": "Vibinoo",
+        "sameAs": "https://vibinoo.ir"
       }
     }
     </script>
@@ -1892,7 +1895,8 @@ window.playFromPopular = function(sid){ const s=popularSongs.find(x=>x.id===sid)
             const grid = document.getElementById('playlistSongsGrid');
             grid.innerHTML = songs.map(s => `<div class="song-card" onclick='window.playSongFromPlaylist(${s.id})'>
                 <div class="song-cover">
-                    <img src="/cover/${s.id}" onerror="this.outerHTML='<i class=\\'fas fa-compact-disc\\' style=\\'font-size: 2rem; color: var(--text-secondary);\\'></i>'">
+                    <img src="/cover/${s.id}" alt="${escapeHtml(s.title)} - ${escapeHtml(s.artist)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                    <i class="fas fa-compact-disc" style="font-size: 2rem; color: var(--text-secondary); display: none;"></i>
                     <div class="play-overlay"><i class="fas fa-play"></i></div>
                 </div>
                 <h4>${escapeHtml(s.title)}</h4>

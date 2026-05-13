@@ -45,6 +45,21 @@ if os.path.exists(frontend_path):
     app.mount("/frontend", StaticFiles(directory=frontend_path), name="frontend")
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
+@app.get("/robots.txt")
+def get_robots():
+    return FileResponse(os.path.join(frontend_path, "robots.txt"))
+
+@app.get("/sitemap.xml")
+def get_sitemap(db: Session = Depends(get_db)):
+    songs = db.query(models.Song).all()
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    xml += '  <url><loc>https://vibinoo.ir/</loc><priority>1.0</priority></url>\n'
+    for s in songs:
+        xml += f'  <url><loc>https://vibinoo.ir/#song-{s.id}</loc><priority>0.8</priority></url>\n'
+    xml += '</urlset>'
+    return StreamingResponse(io.BytesIO(xml.encode()), media_type="application/xml")
+
 # ========== دیتابیس ==========
 def get_db():
     db = SessionLocal()
