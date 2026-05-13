@@ -28,6 +28,17 @@
     <meta property="og:site_name" content="Vibinoo" />
     <meta property="og:locale" content="fa_IR" />
 
+    <!-- ========== Twitter Cards ========== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="وایبینو | پخش آنلاین موسیقی و دانلود آهنگ جدید" />
+    <meta name="twitter:description" content="وایبینو بهترین پلتفرم پخش آنلاین موسیقی ایرانی و خارجی. همین حالا آهنگ‌های جدید را بشنوید." />
+    <meta name="twitter:image" content="https://vibinoo.ir/frontend/img/og-image.jpg" />
+
+    <!-- ========== Multi-language SEO ========== -->
+    <link rel="alternate" hreflang="fa" href="https://vibinoo.ir/" />
+    <link rel="alternate" hreflang="en" href="https://vibinoo.ir/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://vibinoo.ir/" />
+
     <!-- ========== JSON-LD Structured Data ========== -->
     <script type="application/ld+json">
     {
@@ -565,7 +576,7 @@
     <div id="page-loader" class="page-loader"><div class="music-loader"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div><div class="loader-text" data-i18n="loading">بارگذاری...</div></div>
 
     <div class="main-container">
-        <div class="sidebar" id="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="sidebar-logo" onclick="window.switchView('home')" style="cursor: pointer;">
                 <i class="fas fa-wave-square"></i>
                 <span>Vibinoo</span>
@@ -595,19 +606,19 @@
                 </div>
                 <div class="mode-toggle" onclick="window.toggleMode()"><span><i class="fas fa-moon"></i> <span data-i18n="nightMode">حالت شب</span></span><i class="fas fa-adjust"></i></div>
             </div>
-        </div>
-        <div class="content-container">
-            <div class="top-navbar">
+        </nav>
+        <main class="content-container">
+            <header class="top-navbar">
                 <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="window.toggleMobileMenu()"><i class="fas fa-bars"></i></button>
-                <div class="search-box-container"><i class="fas fa-search"></i><input type="text" class="search-box" id="global-search" placeholder="جستجوی آهنگ، خواننده..." onkeyup="window.handleSearch()"></div>
+                <div class="search-box-container"><i class="fas fa-search"></i><input type="text" class="search-box" id="global-search" placeholder="جستجوی آهنگ، خواننده..." onkeyup="window.handleSearch()" autocomplete="off" autocorrect="off" spellcheck="false"></div>
                 <button class="lang-btn" id="langBtn" onclick="window.toggleLanguage()"><i class="fas fa-globe"></i> <span id="langText">English</span></button>
                 <div id="auth-section">
                     <div class="auth-buttons" id="auth-buttons"><button class="btn-signup" onclick="window.showModal('register')"><span data-i18n="signup">ثبت‌نام</span></button><button class="btn-login" onclick="window.showModal('login')"><span data-i18n="login">ورود</span></button></div>
                     <div id="user-info" class="user-info" style="display: none;"><span id="username-display" onclick="window.showAccountPanel()" style="cursor: pointer; text-decoration: underline;"></span><button class="btn-logout" onclick="window.logout()"><span data-i18n="logout">خروج</span></button></div>
                 </div>
-            </div>
+            </header>
             <div id="dynamic-content"></div>
-        </div>
+        </main>
     </div>
 
     <!-- پنل آپلود سراسری -->
@@ -1399,11 +1410,11 @@ function generateRecommendations() {
 function renderHomeSections() { 
     const container = document.getElementById('homeSectionsContainer'); 
     if (!container) return; 
-    const forYou = `<div class="section-header"><h2><i class="fas fa-star"></i> <span data-i18n="forYou">${translations[currentLang].forYou}</span></h2><a onclick="window.goToHomeSubPage('foryou')">${translations[currentLang].seeAll} <i class="fas fa-chevron-right"></i></a></div><div class="cards-scroll">${recommendedSongs.slice(0,10).map(s=>`<div class="section-card" onclick='window.playFromHome(${s.id})'><div class="section-card-img"><img src="/cover/${s.id}" onerror="this.src='data:image/svg+xml...'"></div>${getSongDeleteButton(s)}<div class="section-card-title">${escapeHtml(s.title)}</div><div class="section-card-subtitle">${escapeHtml(s.artist)}</div><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="like-btn-card ${likedStatus.get(s.id)?'liked':''}" onclick="event.stopPropagation(); toggleLikeFromCard(${s.id}, this)"><i class="fas fa-heart"></i></button></div></div>`).join('')}</div>`; 
-    const recent = `<div class="section-header"><h2><i class="fas fa-clock"></i> <span data-i18n="newest">${translations[currentLang].newest}</span></h2><a onclick="window.goToHomeSubPage('recent')">${translations[currentLang].seeAll} <i class="fas fa-chevron-right"></i></a></div><div class="cards-scroll">${newSongs.slice(0,10).map(s=>`<div class="section-card" onclick='window.playFromHome(${s.id})'><div class="section-card-img"><img src="/cover/${s.id}" onerror="this.src='data:image/svg+xml...'"></div>${getSongDeleteButton(s)}<div class="section-card-title">${escapeHtml(s.title)}</div><div class="section-card-subtitle">${escapeHtml(s.artist)}</div><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="like-btn-card ${likedStatus.get(s.id)?'liked':''}" onclick="event.stopPropagation(); toggleLikeFromCard(${s.id}, this)"><i class="fas fa-heart"></i></button></div></div>`).join('')}</div>`; 
-    const popular = `<div class="section-header"><h2><i class="fas fa-fire"></i> <span data-i18n="mostPopular">${translations[currentLang].mostPopular}</span></h2><a onclick="window.goToHomeSubPage('popular')">${translations[currentLang].seeAll} <i class="fas fa-chevron-right"></i></a></div><div class="cards-scroll">${popularSongs.slice(0,10).map(s=>`<div class="section-card" onclick='window.playFromHome(${s.id})'><div class="section-card-img"><img src="/cover/${s.id}" onerror="this.src='data:image/svg+xml...'"></div>${getSongDeleteButton(s)}<div class="section-card-title">${escapeHtml(s.title)}</div><div class="section-card-subtitle">${escapeHtml(s.artist)}</div><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="like-btn-card ${likedStatus.get(s.id)?'liked':''}" onclick="event.stopPropagation(); toggleLikeFromCard(${s.id}, this)"><i class="fas fa-heart"></i></button></div></div>`).join('')}</div>`; 
+    const forYou = `<section class="section-header"><h2><i class="fas fa-star"></i> <span data-i18n="forYou">${translations[currentLang].forYou}</span></h2><a onclick="window.goToHomeSubPage('foryou')">${translations[currentLang].seeAll} <i class="fas fa-chevron-right"></i></a></section><div class="cards-scroll">${recommendedSongs.slice(0,10).map(s=>`<article class="section-card" onclick='window.playFromHome(${s.id})'><div class="section-card-img"><img src="/cover/${s.id}" loading="lazy" alt="${escapeHtml(s.title)} - ${escapeHtml(s.artist)}" onerror="this.src='data:image/svg+xml...'"></div>${getSongDeleteButton(s)}<div class="section-card-title">${escapeHtml(s.title)}</div><div class="section-card-subtitle">${escapeHtml(s.artist)}</div><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="like-btn-card ${likedStatus.get(s.id)?'liked':''}" onclick="event.stopPropagation(); toggleLikeFromCard(${s.id}, this)"><i class="fas fa-heart"></i></button></div></article>`).join('')}</div>`; 
+    const recent = `<section class="section-header"><h2><i class="fas fa-clock"></i> <span data-i18n="newest">${translations[currentLang].newest}</span></h2><a onclick="window.goToHomeSubPage('recent')">${translations[currentLang].seeAll} <i class="fas fa-chevron-right"></i></a></section><div class="cards-scroll">${newSongs.slice(0,10).map(s=>`<article class="section-card" onclick='window.playFromHome(${s.id})'><div class="section-card-img"><img src="/cover/${s.id}" loading="lazy" alt="${escapeHtml(s.title)} - ${escapeHtml(s.artist)}" onerror="this.src='data:image/svg+xml...'"></div>${getSongDeleteButton(s)}<div class="section-card-title">${escapeHtml(s.title)}</div><div class="section-card-subtitle">${escapeHtml(s.artist)}</div><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="like-btn-card ${likedStatus.get(s.id)?'liked':''}" onclick="event.stopPropagation(); toggleLikeFromCard(${s.id}, this)"><i class="fas fa-heart"></i></button></div></article>`).join('')}</div>`; 
+    const popular = `<section class="section-header"><h2><i class="fas fa-fire"></i> <span data-i18n="mostPopular">${translations[currentLang].mostPopular}</span></h2><a onclick="window.goToHomeSubPage('popular')">${translations[currentLang].seeAll} <i class="fas fa-chevron-right"></i></a></section><div class="cards-scroll">${popularSongs.slice(0,10).map(s=>`<article class="section-card" onclick='window.playFromHome(${s.id})'><div class="section-card-img"><img src="/cover/${s.id}" loading="lazy" alt="${escapeHtml(s.title)} - ${escapeHtml(s.artist)}" onerror="this.src='data:image/svg+xml...'"></div>${getSongDeleteButton(s)}<div class="section-card-title">${escapeHtml(s.title)}</div><div class="section-card-subtitle">${escapeHtml(s.artist)}</div><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="like-btn-card ${likedStatus.get(s.id)?'liked':''}" onclick="event.stopPropagation(); toggleLikeFromCard(${s.id}, this)"><i class="fas fa-heart"></i></button></div></article>`).join('')}</div>`; 
     let artists = ''; 
-    if (topArtists.length) artists = `<div class="section-header"><h2><i class="fas fa-microphone-alt"></i> <span data-i18n="topArtists">${translations[currentLang].topArtists}</span></h2><a onclick="window.goToHomeSubPage('artists')">${translations[currentLang].seeAll} <i class="fas fa-chevron-right"></i></a></div><div class="cards-scroll">${topArtists.map(a=>`<div class="artist-card" onclick="showArtistSongs('${escapeHtml(a.artist)}')"><div class="artist-avatar"><i class="fas fa-user-circle"></i></div><h4>${escapeHtml(a.artist)}</h4><p>${a.playCount} ${currentLang === 'fa' ? 'بار' : 'plays'}</p></div>`).join('')}</div>`; 
+    if (topArtists.length) artists = `<section class="section-header"><h2><i class="fas fa-microphone-alt"></i> <span data-i18n="topArtists">${translations[currentLang].topArtists}</span></h2><a onclick="window.goToHomeSubPage('artists')">${translations[currentLang].seeAll} <i class="fas fa-chevron-right"></i></a></section><div class="cards-scroll">${topArtists.map(a=>`<article class="artist-card" onclick="showArtistSongs('${escapeHtml(a.artist)}')"><div class="artist-avatar"><i class="fas fa-user-circle"></i></div><h4>${escapeHtml(a.artist)}</h4><p>${a.playCount} ${currentLang === 'fa' ? 'بار' : 'plays'}</p></article>`).join('')}</div>`; 
     container.innerHTML = forYou + recent + popular + artists; 
 }
 
@@ -1544,7 +1555,7 @@ async function loadMySongs() {
 
 function renderMySongsPaginated() { 
     const start=(currentPage-1)*itemsPerPage, pageSongs=mySongs.slice(start, start+itemsPerPage), total=Math.ceil(mySongs.length/itemsPerPage); 
-    document.getElementById('mySongsGrid').innerHTML=pageSongs.map(s=>`<div class="song-card"><div class="song-cover" onclick='window.playFromMySongs(${s.id})'><img src="/uploads/covers/${s.id}.jpg" onerror="this.src='/cover/${s.id}'; this.onerror=null;"><div class="play-overlay"><i class="fas fa-play"></i></div></div><button class="delete-btn" onclick="event.stopPropagation(); window.deleteMySong(${s.id})"><i class="fas fa-trash-alt"></i></button><h4>${escapeHtml(s.title)}</h4><p>${escapeHtml(s.artist)}</p><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="share-btn-card" onclick="event.stopPropagation(); window.shareSong(${s.id},'${escapeHtml(s.title)}','${escapeHtml(s.artist)}')"><i class="fas fa-share-alt"></i></button></div></div>`).join(''); 
+    document.getElementById('mySongsGrid').innerHTML=pageSongs.map(s=>`<article class="song-card"><div class="song-cover" onclick='window.playFromMySongs(${s.id})'><img src="/uploads/covers/${s.id}.jpg" loading="lazy" alt="${escapeHtml(s.title)} - ${escapeHtml(s.artist)}" onerror="this.src='/cover/${s.id}'; this.onerror=null;"><div class="play-overlay"><i class="fas fa-play"></i></div></div><button class="delete-btn" onclick="event.stopPropagation(); window.deleteMySong(${s.id})"><i class="fas fa-trash-alt"></i></button><h4>${escapeHtml(s.title)}</h4><p>${escapeHtml(s.artist)}</p><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="share-btn-card" onclick="event.stopPropagation(); window.shareSong(${s.id},'${escapeHtml(s.title)}','${escapeHtml(s.artist)}')"><i class="fas fa-share-alt"></i></button></div></article>`).join(''); 
     let pag=''; if(total>1){ pag='<div class="pagination">'; if(currentPage>1) pag+=`<button class="page-btn" onclick="goToMySongsPage(${currentPage-1})"><i class="fas fa-chevron-right"></i></button>`; for(let i=1;i<=Math.min(5,total);i++) pag+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goToMySongsPage(${i})">${i}</button>`; if(currentPage<total) pag+=`<button class="page-btn" onclick="goToMySongsPage(${currentPage+1})"><i class="fas fa-chevron-right"></i></button>`; pag+='</div>'; } document.getElementById('paginationMySongs').innerHTML=pag; 
 }
 
@@ -1667,7 +1678,7 @@ async function loadLikedSongs() {
 }
 function renderLikedPaginated() { 
     const start=(currentPage-1)*itemsPerPage, pageSongs=likedSongs.slice(start, start+itemsPerPage), total=Math.ceil(likedSongs.length/itemsPerPage); 
-    document.getElementById('likedGrid').innerHTML=pageSongs.map(s=>`<div class="song-card" onclick='window.playFromLiked(${s.id})'><div class="song-cover"><img src="/uploads/covers/${s.id}.jpg" onerror="this.src='/cover/${s.id}'; this.onerror=null;"><div class="play-overlay"><i class="fas fa-play"></i></div></div>${getSongDeleteButton(s)}<h4>${escapeHtml(s.title)}</h4><p>${escapeHtml(s.artist)}</p><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="share-btn-card" onclick="event.stopPropagation(); window.shareSong(${s.id},'${escapeHtml(s.title)}','${escapeHtml(s.artist)}')"><i class="fas fa-share-alt"></i></button></div></div>`).join(''); 
+    document.getElementById('likedGrid').innerHTML=pageSongs.map(s=>`<article class="song-card" onclick='window.playFromLiked(${s.id})'><div class="song-cover"><img src="/uploads/covers/${s.id}.jpg" loading="lazy" alt="${escapeHtml(s.title)} - ${escapeHtml(s.artist)}" onerror="this.src='/cover/${s.id}'; this.onerror=null;"><div class="play-overlay"><i class="fas fa-play"></i></div></div>${getSongDeleteButton(s)}<h4>${escapeHtml(s.title)}</h4><p>${escapeHtml(s.artist)}</p><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="share-btn-card" onclick="event.stopPropagation(); window.shareSong(${s.id},'${escapeHtml(s.title)}','${escapeHtml(s.artist)}')"><i class="fas fa-share-alt"></i></button></div></article>`).join(''); 
     let pag=''; if(total>1){ pag='<div class="pagination">'; if(currentPage>1) pag+=`<button class="page-btn" onclick="goToLikedPage(${currentPage-1})"><i class="fas fa-chevron-right"></i></button>`; for(let i=1; i<=Math.min(5,total); i++) pag+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goToLikedPage(${i})">${i}</button>`; if(currentPage<total) pag+=`<button class="page-btn" onclick="goToLikedPage(${currentPage+1})"><i class="fas fa-chevron-right"></i></button>`; pag+='</div>'; } document.getElementById('paginationLiked').innerHTML=pag; 
 }
 function goToLikedPage(p){ currentPage=p; renderLikedPaginated(); }
@@ -1682,7 +1693,7 @@ async function loadMostLiked() {
 }
 function renderPopularPaginated() { 
     const start=(currentPage-1)*itemsPerPage, pageSongs=popularSongs.slice(start, start+itemsPerPage), total=Math.ceil(popularSongs.length/itemsPerPage); 
-    document.getElementById('popularGrid').innerHTML=pageSongs.map(s=>`<div class="song-card" onclick='window.playFromPopular(${s.id})'><div class="song-cover"><img src="/uploads/covers/${s.id}.jpg" onerror="this.src='/cover/${s.id}'; this.onerror=null;"><div class="play-overlay"><i class="fas fa-play"></i></div></div>${getSongDeleteButton(s)}<h4>${escapeHtml(s.title)}</h4><p>${escapeHtml(s.artist)}</p><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="share-btn-card" onclick="event.stopPropagation(); window.shareSong(${s.id},'${escapeHtml(s.title)}','${escapeHtml(s.artist)}')"><i class="fas fa-share-alt"></i></button></div></div>`).join(''); 
+    document.getElementById('popularGrid').innerHTML=pageSongs.map(s=>`<article class="song-card" onclick='window.playFromPopular(${s.id})'><div class="song-cover"><img src="/uploads/covers/${s.id}.jpg" loading="lazy" alt="${escapeHtml(s.title)} - ${escapeHtml(s.artist)}" onerror="this.src='/cover/${s.id}'; this.onerror=null;"><div class="play-overlay"><i class="fas fa-play"></i></div></div>${getSongDeleteButton(s)}<h4>${escapeHtml(s.title)}</h4><p>${escapeHtml(s.artist)}</p><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="share-btn-card" onclick="event.stopPropagation(); window.shareSong(${s.id},'${escapeHtml(s.title)}','${escapeHtml(s.artist)}')"><i class="fas fa-share-alt"></i></button></div></article>`).join(''); 
     let pag=''; if(total>1){ pag='<div class="pagination">'; if(currentPage>1) pag+=`<button class="page-btn" onclick="goToPopularPageList(${currentPage-1})"><i class="fas fa-chevron-right"></i></button>`; for(let i=1; i<=Math.min(5,total); i++) pag+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goToPopularPageList(${i})">${i}</button>`; if(currentPage<total) pag+=`<button class="page-btn" onclick="goToPopularPageList(${currentPage+1})"><i class="fas fa-chevron-right"></i></button>`; pag+='</div>'; } document.getElementById('paginationPopular').innerHTML=pag; 
 }
 function goToPopularPageList(p){ currentPage=p; renderPopularPaginated(); }
@@ -1816,6 +1827,47 @@ window.playFromPopular = function(sid){ const s=popularSongs.find(x=>x.id===sid)
         
         window.logout = function(){ localStorage.removeItem('user_token'); localStorage.removeItem('username'); token=null; audio.pause(); document.getElementById('nowPlayingBar').classList.add('empty'); document.body.classList.remove('player-active'); document.getElementById('auth-buttons').style.display='flex'; document.getElementById('user-info').style.display='none'; window.homeBackStack=[]; window.currentHomeSubPageType=null; window.switchView('home'); }
         
+        window.updateSEOMetadata = function(view, param) {
+            let title = "وایبینو | پخش آنلاین موسیقی و دانلود آهنگ جدید";
+            let description = "وایبینو (Vibinoo) بهترین پلتفرم پخش آنلاین موسیقی ایرانی و خارجی. همین حالا آهنگ‌های جدید را با بالاترین کیفیت بشنوید و لذت ببرید.";
+            
+            if (currentLang === 'en') {
+                title = "Vibinoo | Online Music Streaming & Download";
+                description = "Vibinoo - The best platform for Iranian and International music streaming. Listen to the latest songs now.";
+            }
+
+            const trans = translations[currentLang];
+            
+            switch(view) {
+                case 'mysongs':
+                    title = `${trans.mySongs} | Vibinoo`;
+                    break;
+                case 'liked':
+                    title = `${trans.liked} | Vibinoo`;
+                    break;
+                case 'popular':
+                    title = `${trans.popular} | Vibinoo`;
+                    break;
+                case 'playlists':
+                    title = `${trans.playlists} | Vibinoo`;
+                    break;
+                case 'public_playlists':
+                    title = `${trans.publicPlaylists} | Vibinoo`;
+                    break;
+                case 'playlist_detail':
+                    title = `${trans.playlist} | Vibinoo`;
+                    break;
+            }
+            
+            document.title = title;
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc) metaDesc.setAttribute('content', description);
+            
+            // Update Open Graph tags for better social sharing representation
+            const ogTitle = document.querySelector('meta[property="og:title"]');
+            if (ogTitle) ogTitle.setAttribute('content', title);
+        }
+
         window.switchView = async function(view, param){ 
             currentPage=1; window.closeMobileMenu(); 
             if(view==='home'){ currentView='home'; await loadHome(); history.pushState({ view: 'home_main' }, "", "#home"); }
@@ -1834,6 +1886,8 @@ window.playFromPopular = function(sid){ const s=popularSongs.find(x=>x.id===sid)
             else if(view==='playlists' || view==='playlist_detail') document.querySelector('.sidebar .nav li:nth-child(5) a')?.classList.add('active'); 
             else if(view==='public_playlists') document.querySelector('.sidebar .nav li:nth-child(6) a')?.classList.add('active'); 
             else if(view==='audius') document.querySelector('.sidebar .nav li:nth-child(7) a')?.classList.add('active'); 
+            
+            window.updateSEOMetadata(view, param);
         }
         
         window.handleSearch = async function(){ const query=document.getElementById('global-search')?.value.trim().toLowerCase(); if(currentView!=='home' || window.currentHomeSubPageType) return; if(!query){ renderHomeSections(); return; } const filtered=currentSongs.filter(s=>s.title.toLowerCase().includes(query)||s.artist.toLowerCase().includes(query)); const container=document.getElementById('homeSectionsContainer'); if(!filtered.length) container.innerHTML=`<div class="empty-state"><div class="empty-icon-container"><div class="empty-record"></div><i class="fas fa-search empty-note"></i></div><h3>${currentLang === 'fa' ? 'نتیجه‌ای یافت نشد' : 'No results found'}</h3><p>${currentLang === 'fa' ? 'با کلمات دیگری امتحان کنید.' : 'Try different keywords.'}</p></div>`; else container.innerHTML=`<div class="section-header"><h2><i class="fas fa-search"></i> ${currentLang === 'fa' ? 'نتایج' : 'Results'} (${filtered.length})</h2></div><div class="cards-scroll">${filtered.map(s=>`<div class="section-card" onclick='window.playFromHome(${s.id})'><div class="section-card-img"><img src="/cover/${s.id}" onerror="this.src='data:image/svg+xml...'"></div>${getSongDeleteButton(s)}<div class="section-card-title">${escapeHtml(s.title)}</div><div class="section-card-subtitle">${escapeHtml(s.artist)}</div><div class="song-actions"><span class="like-count"><i class="fas fa-heart"></i> ${s.like_count||0}</span><button class="share-btn-card" onclick="event.stopPropagation(); window.downloadSong(${s.id})"><i class="fas fa-download"></i></button><button class="like-btn-card ${likedStatus.get(s.id)?'liked':''}" onclick="event.stopPropagation(); toggleLikeFromCard(${s.id}, this)"><i class="fas fa-heart"></i></button></div></div>`).join('')}</div>`; }
