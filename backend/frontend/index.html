@@ -1447,7 +1447,7 @@ window.playFromHome = function(sid) {
     let list = currentSongs;
     if (window.currentHomeSubPageType === 'foryou') list = recommendedSongs;
     else if (window.currentHomeSubPageType === 'recent') list = newSongs;
-    else if (context === 'popular') list = popularSongs; // Note: 'context' might not be defined here, fixing logic below
+    else if (window.currentHomeSubPageType === 'popular') list = popularSongs;
     
     const s = list.find(x=>x.id===sid); 
     if(s) playSong(s, list); 
