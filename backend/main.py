@@ -47,18 +47,25 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 @app.get("/robots.txt")
 def get_robots():
-    return FileResponse(os.path.join(frontend_path, "robots.txt"))
+    robots_path = os.path.join(frontend_path, "robots.txt")
+    if os.path.exists(robots_path):
+        return FileResponse(robots_path)
+    return "User-agent: *\nAllow: /"
 
 @app.get("/sitemap.xml")
 def get_sitemap(db: Session = Depends(get_db)):
-    songs = db.query(models.Song).all()
-    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    xml += '  <url><loc>https://vibinoo.ir/</loc><priority>1.0</priority></url>\n'
-    for s in songs:
-        xml += f'  <url><loc>https://vibinoo.ir/#song-{s.id}</loc><priority>0.8</priority></url>\n'
-    xml += '</urlset>'
-    return StreamingResponse(io.BytesIO(xml.encode()), media_type="application/xml")
+    try:
+        # استفاده مستقیم از Song به جای models.Song برای اطمینان از صحت مدل
+        all_songs = db.query(Song).all()
+        xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+        xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        xml += '  <url><loc>https://vibinoo.ir/</loc><priority>1.0</priority></url>\n'
+        for s in all_songs:
+            xml += f'  <url><loc>https://vibinoo.ir/#song-{s.id}</loc><priority>0.8</priority></url>\n'
+        xml += '</urlset>'
+        return StreamingResponse(io.BytesIO(xml.encode()), media_type="application/xml")
+    except Exception as e:
+        return StreamingResponse(io.BytesIO(b'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://vibinoo.ir/</loc></url></urlset>'), media_type="application/xml")
 
 # ========== دیتابیس ==========
 def get_db():
