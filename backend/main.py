@@ -276,7 +276,7 @@ def change_password(
 
 
 @app.get("/search/")
-def search_songs(q: str, skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
+def search_songs(q: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     if not q:
         return {"items": [], "total": 0}
     
@@ -304,7 +304,7 @@ def search_songs(q: str, skip: int = 0, limit: int = 20, db: Session = Depends(g
 
 
 @app.get("/songs/")
-def list_songs(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
+def list_songs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     query = db.query(Song).filter(Song.approved == True)
     total = query.count()
     songs = query.offset(skip).limit(limit).all()
@@ -343,7 +343,7 @@ def like_status(song_id: int, db: Session = Depends(get_db), current_user: User 
     return {"liked": existing is not None}
 
 @app.get("/most-liked/")
-def most_liked_songs(limit: int = 50, db: Session = Depends(get_db)):
+def most_liked_songs(limit: int = 100, db: Session = Depends(get_db)):
     songs = db.query(Song).filter(Song.approved == True).all()
     result = []
     for song in songs:
@@ -614,7 +614,7 @@ def delete_song(song_id: int, admin: User = Depends(get_admin_user), db: Session
 # ========== دریافت آهنگ‌های لایک شده کاربر جاری ==========
 @app.get("/liked-songs/")
 def get_liked_songs(
-    skip: int = 0, limit: int = 20,
+    skip: int = 0, limit: int = 100,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -644,7 +644,7 @@ def get_liked_songs(
 # ========== دریافت آهنگ‌های آپلود شده توسط کاربر جاری ==========
 @app.get("/my-songs/")
 def get_my_songs(
-    skip: int = 0, limit: int = 20,
+    skip: int = 0, limit: int = 100,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
