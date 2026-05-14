@@ -254,12 +254,12 @@
         .mini-player-progress-fill { width: 0%; height: 100%; background: var(--accent-color); transition: width 0.1s linear; position: relative; }
         .mini-player-progress-fill::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%) scale(0); width: 12px; height: 12px; background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .now-playing-bar:hover .mini-player-progress-fill::after { transform: translateY(-50%) scale(1); }
-        .mini-player-controls { display: flex; align-items: center; justify-content: center; gap: 24px; }
+        .mini-player-controls { display: flex; align-items: center; justify-content: center; gap: 24px; flex: 1; }
         .mini-player-controls button { background: transparent; border: none; color: var(--text-primary); cursor: pointer; font-size: 1.125rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; opacity: 0.8; outline: none; }
         .mini-player-controls button:hover { color: var(--accent-color); opacity: 1; transform: scale(1.1); }
         .mini-player-controls button#playPauseMini { font-size: 1.25rem; background: var(--text-primary); color: #000; width: 36px; height: 36px; border-radius: 50%; opacity: 1; outline: none !important; border: none !important; -webkit-tap-highlight-color: rgba(0,0,0,0) !important; }
         .mini-player-controls button#playPauseMini:hover { background: var(--accent-color); transform: scale(1.05); }
-        .mini-player-actions { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+        .mini-player-actions { display: flex; align-items: center; justify-content: flex-end; gap: 16px; flex: 1; min-width: 0; }
         .mini-player-actions button { background: transparent; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1rem; transition: all 0.2s; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .mini-player-actions button:hover { color: #f43f5e; background: rgba(244, 63, 94, 0.1); }
         .mini-player-actions button.liked { color: var(--accent-color); }
@@ -564,7 +564,7 @@
             body.light-mode .mini-player-text h4 { color: #000; }
             body.light-mode .mini-player-text p { color: #555; }
             
-            .mini-player-controls { gap: 20px !important; margin-left: 10px; }
+            .mini-player-controls { gap: 20px !important; margin-left: 10px; flex: none; }
             .mini-player-controls button { color: #fff; opacity: 1; padding: 6px; }
             body.light-mode .mini-player-controls button { color: #000; }
             .mini-player-controls button#playPauseMini { background: transparent; color: #fff; width: auto; height: auto; border-radius: 0; padding: 6px; }
@@ -576,6 +576,7 @@
             .mini-player-progress-fill { background: #fff; transition: width 0.1s linear; }
             body.light-mode .mini-player-progress-fill { background: #000; }
             .mini-player-progress-fill::after { display: none; }
+            .mini-player-actions { flex: none; }
             
             /* Expanded Player Fixes */
             .expanded-player { padding: 24px 20px; box-sizing: border-box; height: 100vh; height: -webkit-fill-available; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
