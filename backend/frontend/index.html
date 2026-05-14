@@ -265,11 +265,10 @@
         .mini-player-actions button.liked { color: var(--accent-color); }
         
         /* Volume Control Desktop */
-        .desktop-only { display: flex; align-items: center; gap: 8px; }
+        .volume-container { display: flex !important; align-items: center; gap: 8px; color: var(--text-secondary); margin-right: 15px; }
         @media (max-width: 768px) {
-            .desktop-only { display: none !important; }
+            .volume-container { display: none !important; }
         }
-        .volume-container { color: var(--text-secondary); margin-right: 15px; }
         .volume-container i { cursor: pointer; transition: color 0.2s; width: 20px; text-align: center; }
         .volume-container i:hover { color: var(--text-primary); }
         .volume-slider { 
@@ -705,7 +704,7 @@
                 <div onclick="window.togglePlay(); event.stopPropagation()" id="playPauseMini" style="cursor: pointer; display: flex; align-items: center; justify-content: center;"><i class="fas fa-play"></i></div>
             </div>
             <div class="mini-player-actions">
-                <div class="volume-container desktop-only" onclick="event.stopPropagation()">
+                <div class="volume-container" onclick="event.stopPropagation()">
                     <i class="fas fa-volume-up" id="volumeIcon" onclick="window.toggleMute()"></i>
                     <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="1" oninput="window.updateVolume(this.value)">
                 </div>
