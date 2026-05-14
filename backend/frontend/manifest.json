@@ -9,13 +9,15 @@
   "icons": [
     {
       "src": "/frontend/img/favicon.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "sizes": "192x192 512x512 1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/frontend/img/apple-touch-icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "sizes": "192x192 512x512 1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

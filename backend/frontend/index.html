@@ -609,7 +609,7 @@
                 <li><a onclick="window.switchView('popular')"><i class="fas fa-fire"></i> <span data-i18n="popular">محبوب‌ترین‌ها</span></a></li>
                 <li><a onclick="window.switchView('playlists')"><i class="fas fa-list"></i> <span data-i18n="playlists">پلی‌لیست‌ها</span></a></li>
                 <li><a onclick="window.switchView('public_playlists')"><i class="fas fa-globe"></i> <span data-i18n="publicPlaylists">پلی‌لیست‌های همگانی</span></a></li>
-                <li></li>
+                <li id="installAppContainer" style="display: none;"><a onclick="window.installPWA()"><i class="fas fa-download"></i> <span data-i18n="installApp">نصب اپلیکیشن</span></a></li>
             </ul>
             <div class="playlists-sidebar" id="playlists-sidebar">
                 <h4 data-i18n="yourPlaylists">پلی‌لیست‌های شما</h4>
@@ -2204,6 +2204,32 @@ window.playFromPopular = function(sid){ const s=popularSongs.find(x=>x.id===sid)
                 });
             });
         }
+
+        // PWA Install Prompt Handling
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+            // Update UI to notify the user they can add to home screen
+            const installBtn = document.getElementById('installAppContainer');
+            if (installBtn) {
+                installBtn.style.display = 'block';
+            }
+        });
+
+        window.installPWA = async function() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                    document.getElementById('installAppContainer').style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        };
     </script>
 </body>
 </html>
