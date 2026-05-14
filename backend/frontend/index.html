@@ -17,6 +17,7 @@
     <!-- ========== Favicons & Mobile Apps ========== -->
     <link rel="icon" type="image/png" href="/frontend/img/favicon.png">
     <link rel="apple-touch-icon" href="/frontend/img/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -2192,6 +2193,17 @@ window.playFromPopular = function(sid){ const s=popularSongs.find(x=>x.id===sid)
         window.currentHomeSubPageType = null;
         window.homeBackStack = [];
         init();
+        
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
     </script>
 </body>
 </html>

@@ -151,6 +151,20 @@ def root():
         return FileResponse(index_path)
     return {"message": "API is running, but index.html was not found in frontend folder"}
 
+@app.get("/sw.js")
+def serve_sw():
+    sw_path = os.path.join(frontend_path, "sw.js")
+    if os.path.exists(sw_path):
+        return FileResponse(sw_path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="Service worker not found")
+
+@app.get("/manifest.json")
+def serve_manifest():
+    manifest_path = os.path.join(frontend_path, "manifest.json")
+    if os.path.exists(manifest_path):
+        return FileResponse(manifest_path, media_type="application/manifest+json")
+    raise HTTPException(status_code=404, detail="Manifest not found")
+
 @app.get("/ping")
 def ping():
     return {"message": "pong"}
